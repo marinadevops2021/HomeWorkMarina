@@ -2,19 +2,19 @@ pipeline {
   agent any
 
   stages {
-        stage('Load Artifact - dev') {
-            when { anyOf {branch "dev"} }
-            steps {
-                copyArtifacts filter: 'infra/dev/terraform.tfstate', projectName: '${JOB_NAME}'
-            }
-        }
-
-        stage('Load Artifact - prod') {
-            when { anyOf {branch "master"} }
-            steps {
-                copyArtifacts filter: 'infra/prod/terraform.tfstate', projectName: '${JOB_NAME}'
-            }
-        }
+//         stage('Load Artifact - dev') {
+//             when { anyOf {branch "dev"} }
+//             steps {
+//                 copyArtifacts filter: 'infra/dev/terraform.tfstate', projectName: '${JOB_NAME}'
+//             }
+//         }
+//
+//         stage('Load Artifact - prod') {
+//             when { anyOf {branch "master"} }
+//             steps {
+//                 copyArtifacts filter: 'infra/prod/terraform.tfstate', projectName: '${JOB_NAME}'
+//             }
+//         }
 
         stage('Terraform Init & Plan'){
             when { anyOf {branch "master";branch "dev";changeRequest()} }
