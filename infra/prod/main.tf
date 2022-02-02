@@ -1,26 +1,45 @@
 terraform {
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.68"
+      source = "hashicorp/aws"
     }
   }
-
-    required_version = ">= 0.14.10"
 }
 
 provider "aws" {
-  profile = "default"
-  region  = "us-east-1"
+  region = "us-west-2"
 }
 
-resource "aws_instance" "Terraform-Test-ec2" {
-  ami           = "ami-0ed9277fb7eb570c9"
-  instance_type = "t2.micro"
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "2.21.0"
+
+  name = var.vpc_name
+  cidr = var.vpc_cidr
+
+  azs             = var.vpc_azs
+  private_subnets = var.vpc_private_subnets
+  public_subnets  = var.vpc_public_subnets
+
+  enable_nat_gateway = var.vpc_enable_nat_gateway
+
+  tags = var.vpc_tags
+}
+
+module "ec2_instances" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "2.12.0"
+
+  name           = "HomeWorkProd"
+  instance_count = 2
+
+  ami                    = "ami-0c5204531f799e0c6"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  subnet_id              = module.vpc.public_subnets[0]
 
   tags = {
-    Name = "HomeWorkMarinaProd"
-    Terraform = "True"
+    Terraform   = "true"
   }
 }
 
