@@ -44,9 +44,6 @@ pipeline {
 
         stage('Terraform Apply - prod'){
             when { anyOf {branch "master"}; }
-            input {
-                message "Do you want to proceed for infrastructure provisioning?"
-            }
             steps {
                 sh '''
                 cd infra/prod
